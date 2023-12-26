@@ -1,9 +1,13 @@
 import random
+import time
 
 
 def queen_search(queens):
-    k = initial_search(queens)
-    final_search(queens, k)
+    while True:
+        k = initial_search(queens)
+        final_search(queens, k)
+        if len(queens) > 200 or (board_collision(queens) == 0):
+            break
 
 
 def initial_search(queens):
@@ -78,8 +82,14 @@ def board_collision(queens):
     return count
 
 
-size = 10000
-queen = [0] * size
-queen_search(queen)
-print(queen)
-print(board_collision(queen))
+if __name__ == '__main__':
+    size = 1
+    ex_time = [0] * 9
+    for i in range(9):
+        size = size * 10
+        queen = [0] * size
+        start = time.perf_counter()
+        queen_search(queen)
+        end = time.perf_counter()
+        ex_time[i] = end - start
+        print("n = 10^{} : {} s".format(i + 1, ex_time[i]))
