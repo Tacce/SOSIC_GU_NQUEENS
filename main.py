@@ -68,7 +68,7 @@ def board_collision(queens):
     return sum(partial_collision(queens, i) for i in range(len(queens)))
 
 
-if __name__ == '__main__':
+def test():
     size = 1
     ex_time = [0] * 7
     for i in range(7):
@@ -79,3 +79,19 @@ if __name__ == '__main__':
         end = time.perf_counter()
         ex_time[i] = end - start
         print("n = 10^{} : {} s".format(i + 1, ex_time[i]))
+
+
+if __name__ == '__main__':
+    while True:
+        x = input("Inserisci dimensione scacchiera o digitare 'test' per misurare tempi di esecuzione "
+                  "sulle potenze di 10:")
+        if x == "end":
+            break
+        elif x == "test":
+            test()
+        else:
+            x = int(x)
+            if x >= 4:
+                queens = [0] * x
+                queen_search(queens)
+                print("Soluzione: " + str(queens))
