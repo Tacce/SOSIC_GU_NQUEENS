@@ -1,5 +1,8 @@
 import random
 import time
+import matplotlib.pyplot as plt
+
+MAX_POWER_10 = 7
 
 
 def queen_search(queens):
@@ -70,8 +73,8 @@ def board_collision(queens):
 
 def test():
     size = 1
-    ex_time = [0] * 7
-    for i in range(7):
+    ex_time = [0] * MAX_POWER_10
+    for i in range(MAX_POWER_10):
         size *= 10
         queens = [0] * size
         start = time.perf_counter()
@@ -79,6 +82,21 @@ def test():
         end = time.perf_counter()
         ex_time[i] = end - start
         print("n = 10^{} : {} s".format(i + 1, ex_time[i]))
+    generateTable(ex_time)
+
+
+def generateTable(ex_time):
+    power = ["10^{}".format(i+1) for i in range(MAX_POWER_10)]
+    fig, ax = plt.subplots()
+    data = [[p, f"{et:.3f}"] for p, et in zip(power, ex_time)]
+    ax.table(cellText=data,
+             colLabels=["n", "Execution Time (s)"],
+             loc='center', colWidths=[0.3, 0.3])
+    ax.axis('off')
+    fig = plt.gcf()
+    plt.title("Exectution Time for Powers of 10")
+    plt.show()
+    fig.savefig("test_table", bbox_inches='tight')
 
 
 if __name__ == '__main__':
