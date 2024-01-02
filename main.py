@@ -2,15 +2,19 @@ import random
 import time
 import matplotlib.pyplot as plt
 
-MAX_POWER_10 = 7
+MAX_POWER_10 = 5
 
 
 def queen_search(queens):
     while True:
         k = initial_search(queens)
-        final_search(queens, k)
-        if len(queens) > 200 or (board_collision(queens) == 0):
+        if len(queens) > 200:
+            final_search(queens, k)
             break
+        else:
+            final_search_reduced(queens, k)
+            if board_collision(queens) == 0:
+                break
 
 
 def initial_search(queens):
@@ -54,6 +58,19 @@ def final_search(queens, k):
                     break
 
 
+def final_search_reduced(queens, k):
+    n = len(queens)
+    for i in range(n - k, n):
+        if total_collisions(queens, i) > 0:
+            for j in range(n):
+                swap(queens, i, j)
+                b = (total_collisions(queens, i) > 0) or (total_collisions(queens, j) > 0)
+                if b:
+                    swap(queens, i, j)
+                else:
+                    break
+
+
 # auxiliary functions
 def swap(queens, a, b):
     queens[a], queens[b] = queens[b], queens[a]
@@ -86,9 +103,9 @@ def test():
 
 
 def generateTable(ex_time):
-    power = ["10^{}".format(i+1) for i in range(MAX_POWER_10)]
+    power = ["10^{}".format(i + 1) for i in range(MAX_POWER_10)]
     fig, ax = plt.subplots()
-    data = [[p, f"{et:.3f}"] for p, et in zip(power, ex_time)]
+    data = [[p, f"{et:.4f}"] for p, et in zip(power, ex_time)]
     ax.table(cellText=data,
              colLabels=["n", "Execution Time (s)"],
              loc='center', colWidths=[0.3, 0.3])
