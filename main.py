@@ -2,7 +2,7 @@ import random
 import time
 import matplotlib.pyplot as plt
 
-MAX_POWER_10 = 4
+MAX_POWER_10 = 9
 
 
 def queen_search(queens):
@@ -21,7 +21,6 @@ def queen_search(queens):
 def initial_search(queens, nd, pd):
     n = len(queens)
     queens[:] = list(range(n))
-    update_diagonal_arrays(queens, nd, pd)
     j = 0
 
     # place queens without collisions
@@ -29,16 +28,19 @@ def initial_search(queens, nd, pd):
         if j == n:
             break
         m = random.randint(j, n - 1)
-        swap(queens, j, m, nd, pd)
-        if partial_collision(queens, j) == 0:
+        swap(queens, j, m)
+        add_conflict(queens, j, nd, pd)
+        if total_collisions(queens, j, nd, pd) == 0:
             j += 1
         else:
-            swap(queens, j, m, nd, pd)
+            remove_conflict(queens, j, nd, pd)
+            swap(queens, j, m)
 
     # place queens with possible collisions
     for i in range(j, n):
         m = random.randint(i, n - 1)
-        swap(queens, i, m, nd, pd)
+        swap(queens, i, m)
+        add_conflict(queens, i, nd, pd)
 
     # return the number of queens with possible collisions
     return n - j
@@ -51,10 +53,10 @@ def final_search(queens, k, nd, pd):
         if total_collisions(queens, i, nd, pd) > 0:
             while it < 7000:
                 j = random.randint(0, n - 1)
-                swap(queens, i, j, nd, pd)
+                swap_collision(queens, i, j, nd, pd)
                 b = (total_collisions(queens, i, nd, pd) > 0) or (total_collisions(queens, j, nd, pd) > 0)
                 if b:
-                    swap(queens, i, j, nd, pd)
+                    swap_collision(queens, i, j, nd, pd)
                     it += 1
                 else:
                     break
@@ -65,10 +67,10 @@ def final_search_reduced(queens, k, nd, pd):
     for i in range(n - k, n):
         if total_collisions(queens, i, nd, pd) > 0:
             for j in range(n):
-                swap(queens, i, j, nd, pd)
+                swap_collision(queens, i, j, nd, pd)
                 b = (total_collisions(queens, i, nd, pd) > 0) or (total_collisions(queens, j, nd, pd) > 0)
                 if b:
-                    swap(queens, i, j, nd, pd)
+                    swap_collision(queens, i, j, nd, pd)
                 else:
                     break
 
@@ -80,26 +82,26 @@ def initialize_diagonal_arrays(n):
     return neg_diagonal, pos_diagonal
 
 
-def update_diagonal_arrays(queens, neg_diagonal, pos_diagonal):
-    n = len(queens)
-    for i in range(len(queens)):
-        neg_diagonal[i + queens[i]] += 1
-        pos_diagonal[i - queens[i] + n - 1] += 1
+def swap(queens, i, j):
+    queens[i], queens[j] = queens[j], queens[i]
 
 
-def swap(queens, a, b, neg_diagonal, pos_diagonal):
-    original_a, original_b = queens[a], queens[b]
-    queens[a], queens[b] = queens[b], queens[a]
+def swap_collision(queens, i, j, neg_diagonal, pos_diagonal):
+    remove_conflict(queens, i, neg_diagonal, pos_diagonal)
+    remove_conflict(queens, j, neg_diagonal, pos_diagonal)
+    swap(queens, i, j)
+    add_conflict(queens, i, neg_diagonal, pos_diagonal)
+    add_conflict(queens, j, neg_diagonal, pos_diagonal)
 
-    neg_diagonal[a + original_a] -= 1
-    neg_diagonal[b + original_b] -= 1
-    pos_diagonal[a - original_a + len(queens) - 1] -= 1
-    pos_diagonal[b - original_b + len(queens) - 1] -= 1
 
-    neg_diagonal[a + queens[a]] += 1
-    neg_diagonal[b + queens[b]] += 1
-    pos_diagonal[a - queens[a] + len(queens) - 1] += 1
-    pos_diagonal[b - queens[b] + len(queens) - 1] += 1
+def remove_conflict(queens, i, neg_diagonal, pos_diagonal):
+    neg_diagonal[i + queens[i]] -= 1
+    pos_diagonal[i - queens[i] + len(queens) - 1] -= 1
+
+
+def add_conflict(queens, i, neg_diagonal, pos_diagonal):
+    neg_diagonal[i + queens[i]] += 1
+    pos_diagonal[i - queens[i] + len(queens) - 1] += 1
 
 
 def partial_collision(queens, i):
@@ -157,4 +159,5 @@ if __name__ == '__main__':
                 queen_search(queens)
                 end = time.perf_counter()
                 print("Soluzione: " + str(queens))
-                print("Tempo di esecuzione: " + str(end - start))
+                print("Tempo di esecuzione: " + str(end - start) + " s")
+                # print(board_collision(queens))
