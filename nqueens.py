@@ -9,7 +9,7 @@ def queen_search(queens):
     while True:
         neg_diagonal, pos_diagonal = initialize_diagonal_arrays(len(queens))
         k = initial_search(queens, neg_diagonal, pos_diagonal)
-        if len(queens) > 200:
+        if len(queens) > 400:
             final_search(queens, k, neg_diagonal, pos_diagonal)
             break
         else:
@@ -139,15 +139,14 @@ def generateTable(ex_time):
              loc='center', colWidths=[0.1, 0.3])
     ax.axis('off')
     fig = plt.gcf()
-    plt.title("Exectution Time for Powers of 10")
+    plt.title("Execution Times for Powers of 10")
     plt.show()
     fig.savefig("test_table", bbox_inches='tight')
 
 
 if __name__ == '__main__':
     while True:
-        x = input("Inserisci dimensione scacchiera o digitare 'test' per misurare tempi di esecuzione "
-                  "sulle potenze di 10:")
+        x = input("Insert board size or type 'test' to measure execution times on powers of 10:")
         if x == "end":
             break
         elif x == "test":
@@ -159,5 +158,5 @@ if __name__ == '__main__':
                 start = time.perf_counter()
                 queen_search(queens)
                 end = time.perf_counter()
-                print("Soluzione: " + str(queens))
-                print("Tempo di esecuzione: " + str(end - start) + " s")
+                print("Solution: " + str(queens))
+                print("Execution Time: " + str(end - start) + " s")
